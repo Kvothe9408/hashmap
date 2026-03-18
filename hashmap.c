@@ -21,14 +21,33 @@ typedef struct hashmap {
 } hashmap;
 
 // functions
-unsigned int hash(char *key) {
-    int result = 5381;
-    int index = 0;
-    while(key[index] != '\0') {
-        result = result * 31;
-        result = result + key[index];
-        index++;
+unsigned int hash(char *key) { //unisgned int indicates that the number must stay positive, so instead of having a range of -2000 -> 2000 it's 0 -> 4000 / char is C for string variables
+    int result = 5381; // defining interger variable / 5381 is standrad for this type of hash function
+    int index = 0; // defining index
+    while(key[index] != '\0') { // loop that keeps going as long as the key doesn't equal \0 how string arrays terminate in C / note all strings in C are just an array of numbers
+        result = result * 31; // 31 is standard prime to use for this type of hash function as it has shown to distribute values better
+        result = result + key[index]; // after the multiplication we add the result with the current int value at key[index]
+        index++; // increment the index count
     } 
-    return result;
+    return result; // returns the result / mod happens in the function itself once, the capacity is defined
 }
-// create_hashmap()
+hashmap *create_hashmap(int capacity) { 
+    hashmap *hash = (hashmap *)malloc(sizeof(hashmap));
+    if (hash == NULL) {
+        printf("memory allocation failed");
+        return NULL;
+    }
+    hash->list = (linkedlist *)malloc(sizeof(linkedlist) * capacity);
+    if (hash->list == NULL) {
+        printf("memory allocation failed");
+        return NULL;
+    }
+    int index = 0;
+    while (index != capacity) {
+        hash->list[index].head = NULL;
+        index++;
+    }
+    hash->count = 0;
+    hash->capacity = capacity;
+    return hash;
+}
