@@ -31,23 +31,23 @@ unsigned int hash(char *key) { //unisgned int indicates that the number must sta
     } 
     return result; // returns the result / mod happens in the function itself once, the capacity is defined
 }
-hashmap *create_hashmap(int capacity) { 
-    hashmap *hash = (hashmap *)malloc(sizeof(hashmap));
-    if (hash == NULL) {
-        printf("memory allocation failed");
+hashmap *create_hashmap(int capacity) { // as noted, this is a version of an array
+    hashmap *hash = (hashmap *)malloc(sizeof(hashmap)); // memory allocation for the struct
+    if (hash == NULL) { // check if the memory failed to allocate
+        printf("memory allocation failed"); 
         return NULL;
     }
-    hash->list = (linkedlist *)malloc(sizeof(linkedlist) * capacity);
-    if (hash->list == NULL) {
+    hash->list = (linkedlist *)malloc(sizeof(linkedlist) * capacity); // enter through the hash->list pointer and allocate memory for the array of linkedlist pointers
+    if (hash->list == NULL) { // check is the memory allocation failed
         printf("memory allocation failed");
         return NULL;
     }
     int index = 0;
-    while (index != capacity) {
-        hash->list[index].head = NULL;
-        index++;
+    while (index != capacity) { // this while loop re-assigns the linked list head in each slot in the hashmap array to NULL
+        hash->list[index].head = NULL; // enter through hash->list pointer and reveal value at current index. Since the value at the index is a struct go to that structs head and set to NULL
+        index++; // increment index
     }
-    hash->count = 0;
-    hash->capacity = capacity;
-    return hash;
+    hash->count = 0; // set the count of the hashmap to 0
+    hash->capacity = capacity; // set the hashmap capacity to the variable capacity;
+    return hash; // return the hashmap pointer
 }
