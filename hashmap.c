@@ -51,3 +51,50 @@ hashmap *create_hashmap(int capacity) { // as noted, this is a version of an arr
     hash->capacity = capacity; // set the hashmap capacity to the variable capacity;
     return hash; // return the hashmap pointer
 }
+hashmap *rehash(hashmap *hash) { // function to expand the hashmap, if the load factor gets to high. Will be nested in the insert function
+    hashmap *rehash = (hashmap *)malloc(sizeof(hashmap)); // memory allocation for the struct
+    if (rehash == NULL) { // NULL check
+        printf("memory allocation failed");
+        return NULL;
+    }
+    rehash->list = (linkedlist *)malloc(sizeof(linkedlist) * hash->capacity * 2) // memory allocation for the new hashmap
+    if (rehash->list == NULL) { // NULL check
+        printf("memory allocation failed");
+        return NULL;
+    }
+    int index_rehash = 0;
+    while (index_rehash != rehash->capacity) { // loop that is true while the index hasn't reached hashmap capacity yet
+        rehash->list[index].head = NULL; // within the new hashmap, go to list at "index" and set the head to NULL
+        index++; // increment index by +1
+    }
+    int index_hash = 0;
+    int index_rehash = 0;
+    Node *current = list->head;
+    while (index_hash != hash->capacity) {
+        int result = 5381;
+        hash->list[index_hash].head = current;
+         int count = 0;
+        while (current->next != NULL) {
+            hash(char current->key);
+            current->result = result;
+            int result_mod = result % hash->capacity;
+            index_rehash = result_mod;
+            Node *node = (Node*)malloc(sizeof(Node));
+            if (node == NULL) {
+                printf("memory allocation failed");
+                return;
+            }
+            node->value = result;
+            node->key = current->key;
+            node->next = rehash->list[index_rehash].head;
+            rehash->list[index_rehash].head = node;
+            count++;
+        }
+        index_hash++;
+    }
+}
+// insert()
+// get()
+// delete ()
+
+// print ()
