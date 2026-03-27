@@ -51,8 +51,8 @@ hashmap *create_hashmap(int capacity) { // as noted, this is a version of an arr
     hash->capacity = capacity; // set the hashmap capacity to the variable capacity;
     return hash; // return the hashmap pointer
 }
-hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the load factor gets to high. Will be nested in the insert function
-    hashmap *new_hash = (hashmap *)malloc(sizeof(hashmap)); // memory allocation for the struct
+hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the load factor gets to high. Will be nested in the insert function, had to create the variable old_hash so there isn't a conflict with the funciton call hash
+    hashmap *new_hash = (hashmap *)malloc(sizeof(hashmap)); // memory allocation for the struct, needed new_hash for the same reason as old_hash
     if (new_hash == NULL) { // NULL check
         printf("memory allocation failed");
         return NULL;
@@ -62,30 +62,30 @@ hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the l
         printf("memory allocation failed");
         return NULL;
     }
-    new_hash->capacity = old_hash->capacity * 2;
-    int index_rehash = 0;
+    new_hash->capacity = old_hash->capacity * 2; // setting the capacity of the new hashmap to double of the old hashmap
+    int index_rehash = 0; // new variable for index that I will be using to increment walk through the hashmap of linkedlists
     while (index_rehash != new_hash->capacity) { // loop that is true while the index hasn't reached hashmap capacity yet
         new_hash->list[index_rehash].head = NULL; // within the new hashmap, go to list at "index" and set the head to NULL
         index_rehash++; // increment index by +1
     }
     int index_hash = 0;
-    while (index_hash != old_hash->capacity) {
-        Node *current = old_hash->list[index_hash].head;
-        while (current != NULL) {
-            unsigned int result = hash(current->key);
-            int result_mod = result % new_hash->capacity;
-            index_rehash = result_mod;
-            Node *node = (Node*)malloc(sizeof(Node));
-            if (node == NULL) {
+    while (index_hash != old_hash->capacity) { // loop to move through the hashmap and rehash all the values into the new hashmap
+        Node *current = old_hash->list[index_hash].head; // creating a node pointer that can walk through the linkedlists
+        while (current != NULL) { // loop rehash value from the old to the new hashmap
+            unsigned int result = hash(current->key); // creates variable 'result' and sets it to the hashed value of the key being used from teh original hashmap
+            int result_mod = result % new_hash->capacity; // creates a variable 'result_mod' and sets it to the mod of result but using the capacity of the new hashmap
+            index_rehash = result_mod; // sets the variable index_rehash to result_mod, so we can use it to place the key/value pair in the right linkedlist in the new hashmap
+            Node *node = (Node*)malloc(sizeof(Node)); // creates a memory alloaction for a Node struct
+            if (node == NULL) { // NULL check
                 printf("memory allocation failed");
                 return NULL;
             }
-            node->value = current->value;
-            node->key = current->key;
-            node->next = new_hash->list[index_rehash].head;
-            new_hash->list[index_rehash].head = node;
+            node->value = current->value; // places value from the node in the old hashmap into the value field of the newly created node
+            node->key = current->key; // ditto for the key
+            node->next = new_hash->list[index_rehash].head; // sets the node's next pointer to the previous head of the linkedlist, as we are pushing this new node to the fornt of the list
+            new_hash->list[index_rehash].head = node; // setting the linkedlist head pointer to point at the new node
+            current = current->next; // increment the current pointer to the next node in the original hashmap
             Node *delete = current;
-            current = current->next;
             free(delete);
         }
         index_hash++;
