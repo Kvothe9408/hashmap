@@ -18,7 +18,7 @@ typedef struct hashmap {
     linkedlist *list;
     int count; // counts the number of values that have been stored in the hashmap, which is needed for the load factor (count/capacity)
     int capacity; // indicates the capacity of the hashmap array, which is needed for the load factor
-} hashmap;
+} hashmap; // found out later that the load factor could have been included in the struct, probably should be instead of being hardcoded in the functions
 
 // functions
 unsigned int hash(char *key) { //unisgned int indicates that the number must stay positive, so instead of having a range of -2000 -> 2000 it's 0 -> 4000 / char is C for string variables
@@ -85,16 +85,32 @@ hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the l
             node->next = new_hash->list[index_rehash].head; // sets the node's next pointer to the previous head of the linkedlist, as we are pushing this new node to the fornt of the list
             new_hash->list[index_rehash].head = node; // setting the linkedlist head pointer to point at the new node
             current = current->next; // increment the current pointer to the next node in the original hashmap
-            Node *delete = current;
-            free(delete);
+            Node *delete = current; // create pointer delete and set to current, so we delete the node form the original hashmap as we move along the linkedlist during the rehash
+            free(delete); // free the node from the original hashmap linkedlist
         }
-        index_hash++;
+        index_hash++; // increment the index of the original hashmap by 1
     }
-    free(old_hash->list);
-    free(old_hash);
-    return new_hash;
+    free(old_hash->list); // free up the memory for the old hashmap
+    free(old_hash); // free up the memory struct for the olde hashmap
+    return new_hash; // return the new hashmap with the rehashed data
 }
-// insert()
+
+void insert(hashmap *hash, char *key, char *value) {
+    unsigned int result = hash(key);
+    int result_mod = result % hash->capacity;
+    int index_hash = result_mod;
+    Node *node = (Node*)malloc(sizeof(Node));
+    node->next = hash->list[index_hash].head;
+    hash->list[index_hash].head = node;
+    node->value = value;
+    node->key = key;
+    hash->count++;
+    if (hash->count/hash->capacity > 0.75) {
+        hash = rehash(hash);
+        return hash;
+    }
+    return; 
+}
 // get()
 // delete ()
 
