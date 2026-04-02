@@ -95,21 +95,21 @@ hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the l
     return new_hash; // return the new hashmap with the rehashed data
 }
 
-void insert(hashmap *hash, char *key, char *value) {
-    unsigned int result = hash(key);
-    int result_mod = result % hash->capacity;
-    int index_hash = result_mod;
-    Node *node = (Node*)malloc(sizeof(Node));
-    node->next = hash->list[index_hash].head;
-    hash->list[index_hash].head = node;
-    node->value = value;
-    node->key = key;
-    hash->count++;
-    if (hash->count/hash->capacity > 0.75) {
-        hash = rehash(hash);
-        return hash;
+hashmap *insert(hashmap *hash_old, char *key, char *value) { // function to insert a new value into the hashmap / don't forget that there can be naming conflicts with variables and functions like the hash function and then variables that are in place of the hashmap pointer
+    unsigned int result = hash(key); // result is unsigned int because it can't be negative for the mod to work within the hash function
+    int result_mod = result % hash_old->capacity; // calculating the mod of the hashed result
+    int index_hash = result_mod; // setting the result value to the index value to use below
+    Node *node = (Node*)malloc(sizeof(Node)); // creating memory allocation for the node that will hold the new data
+    node->next = hash_old->list[index_hash].head; //setting the new node next value to the header of the previous node at the front of the linkedlist
+    hash_old->list[index_hash].head = node; // setting the head pointer fo the linkedlist to point at the head of the new node
+    node->value = value; // placing the value into the new node
+    node->key = key; // placing the key into the new node
+    hash_old->count++; // incrementing the count of the hashmap
+    if ((float) hash_old->count/hash_old->capacity > 0.75) { // checking he load factor of the hashmap and determining if we need to rehash the hashmap / note that the load factor is hardcoded into the function but probably could and should be included in the hashmap struct / also note that one of the variables in the equation needs to be cast (temporarily change its data type) as float, so that C doesn't truncate the result and gives a decimal value
+        hash_old = rehash(hash_old); // rehash is the load factor is too high
+        return hash_old; // return the old hash if not
     }
-    return; 
+    return hash_old; // return the hashmap pointer, which now points at the new rehashed hashmap
 }
 // get()
 // delete ()
