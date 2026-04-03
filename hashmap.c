@@ -111,7 +111,26 @@ hashmap *insert(hashmap *hash_old, char *key, char *value) { // function to inse
     }
     return hash_old; // return the hashmap pointer, which now points at the new rehashed hashmap
 }
-// get()
+
+char *get(hashmap *current_hash, char *key) { //get function
+    unsigned int result = hash(key); // hasing key to find index
+    int result_mod = result % current_hash->capacity;
+    int index_hash = result_mod; // mod
+    Node *current_head = current_hash->list[index_hash].head; // walk thgouth node
+    if (current_head == NULL) { // NULL check for the linekedlist before starting the walk through
+        printf("not found");
+        return NULL;
+        }
+    while (strcmp(key, current_head->key) != 0) { // strcmp is the functionality taht checks whether two strings are equal / while loop to find the matching key within the nodes of the linkedlist
+        current_head = current_head->next; // node walk through
+        if (current_head == NULL) { // NULL check after every walk to make sure we stop when the linkedlist terminates
+            printf("not found");
+            return NULL;
+        }
+    }
+    return current_head->value; // return the value of the key value pair
+}
+
 // delete ()
 
 // print ()
