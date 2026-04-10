@@ -158,7 +158,29 @@ void delete(hashmap *current_hash, char *key) {
     free(current_delete);
 }
 
-// print ()
+void print(hashmap *current_hash, char *key) {
+    int index_hash = 0;
+    unsigned int result = hash(key);
+    int result_mod = result % current_hash->capacity;
+    printf("%s\n", key);
+    printf("%d\n", result_mod);
+    printf("\n");
+    Node *current_node = NULL;
+    for (index_hash = 0; index_hash != current_hash->capacity; index_hash++) {
+        printf("%d\n", index_hash);
+        current_node = current_hash->list[index_hash].head;
+        if (current_node == NULL) {
+            printf("no data");
+            continue;
+        }
+        while (current_node != NULL) {
+            printf("%s\n", current_node->key);
+            printf("%s\n", current_node->value);
+            printf("\n");
+            current_node = current_node->next;
+        }    
+    }
+}
 
 int main(void) {
     return 0;
