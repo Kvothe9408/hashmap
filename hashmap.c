@@ -131,53 +131,53 @@ char *get(hashmap *current_hash, char *key) { //get function
     return current_head->value; // return the value of the key value pair
 }
 
-void delete(hashmap *current_hash, char *key) {
+void delete(hashmap *current_hash, char *key) { // delete a specific key value pair node in the hashmap
     unsigned int result = hash(key);
-    int result_mod = result % current_hash->capacity;
+    int result_mod = result % current_hash->capacity; // getting the mod for the correct index after the hash
     int index_hash = result_mod;
-    Node *current_delete = current_hash->list[index_hash].head;
-    if (current_delete == NULL) {
+    Node *current_delete = current_hash->list[index_hash].head; // setting the new node to the linkedlist head at the specific index_hash position in the hashmap
+    if (current_delete == NULL) { // checking if the list is empty
         printf("not found");
         return;
     }
-    Node * current_2 = NULL;
-    while (strcmp(key, current_delete->key) != 0) {
-        current_2 = current_delete;
-        current_delete = current_delete->next;
-        if (current_delete == NULL) {
+    Node * current_2 = NULL; // creating a second node to trail the main deleting node during the list walk through. this node is needed, so we can link the pre-delete node to the post-delete node
+    while (strcmp(key, current_delete->key) != 0) { //checks if the string value matches another, subtracts one from the other, thus we are checking if the results is 0 or not
+        current_2 = current_delete; // setting the trailing node pointer to point at the delete node head
+        current_delete = current_delete->next; // moving the delete node forward
+        if (current_delete == NULL) { // checking if the list ended
             printf("not found");
             return;
         }
     }
-    if (current_2 == NULL) {
-        current_hash->list[index_hash].head = current_delete->next;
-        free(current_delete);
+    if (current_2 == NULL) { // checking if current_2 is NULL indicating the node to be deleted is the first in the list, since current_2 was never moved forward
+        current_hash->list[index_hash].head = current_delete->next; // setting the head of the list to point at the head of the second node / if that next pointer is pointing at NULL, that is also fine
+        free(current_delete); // delete the node
         return;
     }
-    current_2->next = current_delete->next;
-    free(current_delete);
+    current_2->next = current_delete->next; // setting the next pointer of the pre-delete node to the head of the post-delete pointer
+    free(current_delete); // delete the node and data
 }
 
-void print(hashmap *current_hash, char *key) {
+void print(hashmap *current_hash, char *key) { // print function to check if the program is acting correctly
     int index_hash = 0;
     unsigned int result = hash(key);
     int result_mod = result % current_hash->capacity;
-    printf("%s\n", key);
-    printf("%d\n", result_mod);
+    printf("%s\n", key); // printing the key value
+    printf("%d\n", result_mod); // printing the manual hash_mod value to then check agains the slot it actually sits in
     printf("\n");
     Node *current_node = NULL;
-    for (index_hash = 0; index_hash != current_hash->capacity; index_hash++) {
-        printf("%d\n", index_hash);
-        current_node = current_hash->list[index_hash].head;
-        if (current_node == NULL) {
+    for (index_hash = 0; index_hash != current_hash->capacity; index_hash++) { // using a for loop because it increments the value automatically even if the loop cycle terminates early
+        printf("%d\n", index_hash); // print the index position
+        current_node = current_hash->list[index_hash].head; // set the node to the head of the current list
+        if (current_node == NULL) { // check is the list is empty
             printf("no data");
-            continue;
+            continue; // terminate the loop cycle but not the function
         }
-        while (current_node != NULL) {
-            printf("%s\n", current_node->key);
-            printf("%s\n", current_node->value);
+        while (current_node != NULL) { // lopp to print values as long as the current node doesn't point at NULL, thus the list being finished
+            printf("%s\n", current_node->key); // print key
+            printf("%s\n", current_node->value); // print value
             printf("\n");
-            current_node = current_node->next;
+            current_node = current_node->next; // walk the node forward
         }    
     }
 }
