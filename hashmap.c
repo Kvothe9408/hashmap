@@ -114,8 +114,8 @@ hashmap *insert(hashmap *hash_old, char *key, char *value) { // function to inse
 
 char *get(hashmap *current_hash, char *key) { //get function
     unsigned int result = hash(key); // hasing key to find index
-    int result_mod = result % current_hash->capacity;
-    int index_hash = result_mod; // mod
+    int result_mod = result % current_hash->capacity;  // mod
+    int index_hash = result_mod;
     Node *current_head = current_hash->list[index_hash].head; // walk thgouth node
     if (current_head == NULL) { // NULL check for the linekedlist before starting the walk through
         printf("not found");
@@ -131,6 +131,35 @@ char *get(hashmap *current_hash, char *key) { //get function
     return current_head->value; // return the value of the key value pair
 }
 
-// delete ()
+void delete(hashmap *current_hash, char *key) {
+    unsigned int result = hash(key);
+    int result_mod = result % current_hash->capacity;
+    int index_hash = result_mod;
+    Node *current_delete = current_hash->list[index_hash].head;
+    if (current_delete == NULL) {
+        printf("not found");
+        return;
+    }
+    Node * current_2 = NULL;
+    while (strcmp(key, current_delete->key) != 0) {
+        current_2 = current_delete;
+        current_delete = current_delete->next;
+        if (current_delete == NULL) {
+            printf("not found");
+            return;
+        }
+    }
+    if (current_2 == NULL) {
+        current_hash->list[index_hash].head = current_delete->next;
+        free(current_delete);
+        return;
+    }
+    current_2->next = current_delete->next;
+    free(current_delete);
+}
 
 // print ()
+
+int main(void) {
+    return 0;
+}
