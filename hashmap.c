@@ -84,15 +84,17 @@ hashmap *rehash(hashmap *old_hash) { // function to expand the hashmap, if the l
             node->key = current->key; // ditto for the key
             node->next = new_hash->list[index_rehash].head; // sets the node's next pointer to the previous head of the linkedlist, as we are pushing this new node to the fornt of the list
             new_hash->list[index_rehash].head = node; // setting the linkedlist head pointer to point at the new node
-            current = current->next; // increment the current pointer to the next node in the original hashmap
             Node *delete = current; // create pointer delete and set to current, so we delete the node form the original hashmap as we move along the linkedlist during the rehash
+            current = current->next; // increment the current pointer to the next node in the original hashmap
             free(delete); // free the node from the original hashmap linkedlist
         }
         index_hash++; // increment the index of the original hashmap by 1
     }
-    free(old_hash->list); // free up the memory for the old hashmap
-    free(old_hash); // free up the memory struct for the olde hashmap
-    return new_hash; // return the new hashmap with the rehashed data
+    free(old_hash->list); // free up the memory for the old hashmap array
+    old_hash->list = new_hash->list; // re-assing the address of the new hashmap to the old one to make sure this works in the main function
+    old_hash->capacity = new_hash->capacity; // ditto
+    free(new_hash); // free up the memory struct for the new hashmap
+    return old_hash; // return the new hashmap with the rehashed data
 }
 
 hashmap *insert(hashmap *hash_old, char *key, char *value) { // function to insert a new value into the hashmap / don't forget that there can be naming conflicts with variables and functions like the hash function and then variables that are in place of the hashmap pointer
@@ -152,25 +154,35 @@ void delete(hashmap *current_hash, char *key) { // delete a specific key value p
     if (current_2 == NULL) { // checking if current_2 is NULL indicating the node to be deleted is the first in the list, since current_2 was never moved forward
         current_hash->list[index_hash].head = current_delete->next; // setting the head of the list to point at the head of the second node / if that next pointer is pointing at NULL, that is also fine
         free(current_delete); // delete the node
+        current_hash->count--;
         return;
     }
     current_2->next = current_delete->next; // setting the next pointer of the pre-delete node to the head of the post-delete pointer
     free(current_delete); // delete the node and data
+    current_hash->count--; // need this to make sure the load factor is accurate
 }
 
 void print(hashmap *current_hash, char *key) { // print function to check if the program is acting correctly
     int index_hash = 0;
     unsigned int result = hash(key);
     int result_mod = result % current_hash->capacity;
+    printf("key:");
     printf("%s\n", key); // printing the key value
+    printf("mod:");
     printf("%d\n", result_mod); // printing the manual hash_mod value to then check agains the slot it actually sits in
+    printf("load factor:");
+    printf("%f\n", (float)current_hash->count / current_hash->capacity);
+    printf("Capacity:");
+    printf("%d\n", current_hash->capacity);
     printf("\n");
     Node *current_node = NULL;
     for (index_hash = 0; index_hash != current_hash->capacity; index_hash++) { // using a for loop because it increments the value automatically even if the loop cycle terminates early
+        printf("Bucket:");
         printf("%d\n", index_hash); // print the index position
         current_node = current_hash->list[index_hash].head; // set the node to the head of the current list
         if (current_node == NULL) { // check is the list is empty
             printf("no data");
+            printf("\n");
             continue; // terminate the loop cycle but not the function
         }
         while (current_node != NULL) { // lopp to print values as long as the current node doesn't point at NULL, thus the list being finished
@@ -183,5 +195,17 @@ void print(hashmap *current_hash, char *key) { // print function to check if the
 }
 
 int main(void) {
+    hashmap *hash_new = create_hashmap(2);
+    insert(hash_new, "alice", "abc");
+    print(hash_new, "alice");
+    insert(hash_new, "bob", "def");
+    print(hash_new, "bob");
+    insert(hash_new, "charlie", "hij");
+    print(hash_new, "charlie");
+    printf("%s\n", get(hash_new, "alice"));
+    printf("%s\n", get(hash_new, "bob"));
+    delete(hash_new, "alice");
+    print(hash_new, "alice");
+    print(hash_new, "bob");
     return 0;
 }
