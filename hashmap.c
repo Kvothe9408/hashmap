@@ -194,6 +194,21 @@ void print(hashmap *current_hash, char *key) { // print function to check if the
     }
 }
 
+void free_hashmap(hashmap *old_hash) {
+    int index_hash = 0;
+    while (index_hash != old_hash->capacity) {
+        Node *current_node = old_hash->list[index_hash].head;
+        while (current_node != NULL) {
+            Node *delete_node = current_node;
+            current_node = current_node->next;
+            free(delete_node);
+        }
+        index_hash++;
+    }
+    free(old_hash->list);
+    free(old_hash);
+}
+
 int main(void) {
     hashmap *hash_new = create_hashmap(2);
     insert(hash_new, "alice", "abc");
@@ -207,5 +222,6 @@ int main(void) {
     delete(hash_new, "alice");
     print(hash_new, "alice");
     print(hash_new, "bob");
+    free(hash_new);
     return 0;
 }
